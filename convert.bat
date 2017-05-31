@@ -40,8 +40,9 @@ set titleIDNumberCodeTemp=00000
 set root=%cd%
 
 :: Set BIN path
-::set binPath=%root%\bin
-set binPath=%root%\tool
+if exist "%root%\bin\make_npdata.exe" set binPath=%root%\bin
+if exist "%root%\tool\make_npdata.exe" set binPath=%root%\tool
+
 
 :: Set Tool Variables
 set dklic_validator="%binPath%\dklic_validator.exe"
