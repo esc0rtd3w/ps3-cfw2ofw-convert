@@ -4,6 +4,9 @@
 :: Source http://www.maxconsole.com/threads/playstation-3-backup-games-now-working-on-ofw-v4-70-ps3.43138/
 
 
+:reset
+cls
+
 title PS3 CFW to OFW Game and App Converter v0.2                      esc0rtd3w 2017
 
 color 0e
@@ -32,10 +35,13 @@ set titleIDLetterCodeTemp=XXXX
 set titleIDNumberCode=00000
 set titleIDNumberCodeTemp=00000
 
-:: Set Root Path
-set root=%~dp0
-set binPath=%root%\bin
-::set binPath=%root%\tool
+:: Set ROOT Path
+::set root=%~dp0
+set root=%cd%
+
+:: Set BIN path
+::set binPath=%root%\bin
+set binPath=%root%\tool
 
 :: Set Tool Variables
 set dklic_validator="%binPath%\dklic_validator.exe"
@@ -63,6 +69,10 @@ echo Loading PS3 CFW to OFW Game and App Converter....
 :: Wait a second
 set waitTime=2
 %wait%>nul
+
+:: Check for game existance
+if not exist "%root%\PS3_GAME" goto fail
+::if not exist "%root%\PS3_GAME\PARAM.SFO" goto fail
 
 :: Clear Screen After Dumping Info
 cls
@@ -257,12 +267,11 @@ del list.txt
 rename temp.txt list.txt
 
 
-:: Convert to sdat all files from the USRDIR folder
-@echo on
+:: Convert game files
 setlocal enabledelayedexpansion
 
 set infile=list.txt
-set find=%CD%\PS3_GAME\
+set find=%cd%\PS3_GAME\
 set replace=
 
 
@@ -273,6 +282,7 @@ echo !TMPR!>>TMP.TXT
 )
 move TMP.TXT %infile%
 
+@echo on
 for /f "tokens=*" %%B in (!infile!) do make_npdata -e "PS3_GAME\%%~B" "%gameID%\%%~B" 0 1 3 0 16
 
 endlocal
@@ -284,7 +294,7 @@ endlocal
 if %licenseStatus%==0 (
 copy /y "PS3_GAME\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
 
-color 0b
+color 0c
 
 echo.
 echo.
@@ -333,7 +343,8 @@ echo.>"%root%\%gameID%\USRDIR\EP9000-%gameID%_00-0000000000000001.txt"
 
 
 :: Cleaning Temp Files
-del /q /f %infile%
+if exist %infile% del /q /f %infile%
+if exist "list.txt" del /f /q "list.txt"
 if exist "temp\PARAM_SFO_TITLE.txt" del /f /q "temp\PARAM_SFO_TITLE.txt"
 if exist "temp\TEMP_PARAM_SFO_TITLE.txt" del /f /q "temp\TEMP_PARAM_SFO_TITLE.txt"
 if exist "temp\PARAM_SFO_TITLE_ID.txt" del /f /q "temp\PARAM_SFO_TITLE_ID.txt"
@@ -346,6 +357,8 @@ if exist "temp\PARAM_SFO_APP_VER.txt" del /f /q "temp\PARAM_SFO_APP_VER.txt"
 if exist "temp\TEMP_PARAM_SFO_APP_VER.txt" del /f /q "temp\TEMP_PARAM_SFO_APP_VER.txt"
 if exist "temp\TEMP_CONVERT_TITLE_LETTERCODE.txt" del /f /q "temp\TEMP_CONVERT_TITLE_LETTERCODE.txt"
 if exist "temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt" del /f /q "temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt"
+if exist "temp\TEMP_CONVERT_TITLE_ID.txt" del /f /q "temp\TEMP_CONVERT_TITLE_ID.txt"
+
 
 :: Finished
 color 0a
@@ -356,3 +369,30 @@ echo                                    END
 echo ===============================================================================
 
 pause
+
+goto end
+
+
+:fail
+color 0c
+cls
+echo The PS3_GAME Directory Is Missing!
+echo.
+echo Please Copy From Disc To %root%
+echo.
+echo.
+echo.
+echo.
+echo Once this is done, press ENTER to continue....
+echo.
+echo.
+
+pause>nul
+
+goto reset
+
+
+
+:end
+
+
