@@ -281,7 +281,7 @@ endlocal
 @echo off
 
 if %licenseStatus%==0 (
-xcopy /y "PS3_GAME\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
+copy /y "PS3_GAME\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
 
 echo.
 echo.
@@ -304,7 +304,7 @@ echo.
 echo.
 pause>nul
 
-xcopy /y "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "PS3_GAME\LICDIR\LIC.DAT"
+copy /y "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "PS3_GAME\LICDIR\LIC.DAT"
 
 set licenseStatus=1
 
@@ -322,6 +322,9 @@ echo.
 make_npdata -e "PS3_GAME\LICDIR\LIC.DAT" "%gameID%\LICDIR\LIC.EDAT" 1 1 3 0 16 3 00 EP9000-%gameID%_00-0000000000000001 1
 )
 
+
+:: Create text file for info
+echo.>"%root%\%gameID%\USRDIR\EP9000-%gameID%_00-0000000000000001.txt"
 
 
 :: Cleaning Temp Files
