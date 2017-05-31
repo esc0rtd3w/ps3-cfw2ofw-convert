@@ -4,7 +4,7 @@
 :: Source http://www.maxconsole.com/threads/playstation-3-backup-games-now-working-on-ofw-v4-70-ps3.43138/
 
 
-title PS3 CFW to OFW Game and App Converter v0.1                      esc0rtd3w 2017
+title PS3 CFW to OFW Game and App Converter v0.2                      esc0rtd3w 2017
 
 color 0e
 
@@ -53,7 +53,6 @@ set sfoprint="%toolsPath%\sfoprint.exe"
 %sfoprint% %root%\PS3_GAME\PARAM.SFO TITLE>"%root%\temp\PARAM_SFO_TITLE.txt"
 %sfoprint% %root%\PS3_GAME\PARAM.SFO TITLE_ID>"%root%\temp\PARAM_SFO_TITLE_ID.txt"
 %sfoprint% %root%\PS3_GAME\PARAM.SFO VERSION>"%root%\temp\PARAM_SFO_VERSION.txt"
-::%sfoprint% %root%\PS3_GAME\PARAM.SFO TARGET_APP_VER>"%root%\temp\PARAM_SFO_TARGET_APP_VER.txt"
 %sfoprint% %root%\PS3_GAME\PARAM.SFO APP_VER>"%root%\temp\PARAM_SFO_APP_VER.txt"
 
 
@@ -67,8 +66,6 @@ set waitTime=2
 :: Clear Screen After Dumping Info
 cls
 
-
-setlocal enabledelayedexpansion
 
 :: Title
 for /f "delims=: tokens=2" %%a in ('type temp\PARAM_SFO_TITLE.txt') do (
@@ -88,12 +85,6 @@ for /f "delims=: tokens=2" %%a in ('type temp\PARAM_SFO_VERSION.txt') do (
 )
 set /p paramDumpVersionApp=<"%root%\temp\TEMP_PARAM_SFO_VERSION.txt"
 
-:: Target App Version
-::for /f "delims=: tokens=2" %%a in ('type temp\PARAM_SFO_TARGET_APP_VER.txt') do (
-::	echo %%a>"%root%\temp\TEMP_PARAM_SFO_TARGET_APP_VER.txt"
-::)
-::set /p paramDumpVersionTargetApp=<"%root%\temp\TEMP_PARAM_SFO_TARGET_APP_VER.txt"
-
 :: App Version
 for /f "delims=: tokens=2" %%a in ('type temp\PARAM_SFO_APP_VER.txt') do (
 	echo %%a>"%root%\temp\TEMP_PARAM_SFO_APP_VER.txt"
@@ -101,47 +92,44 @@ for /f "delims=: tokens=2" %%a in ('type temp\PARAM_SFO_APP_VER.txt') do (
 set /p paramDumpVersion=<"%root%\temp\TEMP_PARAM_SFO_APP_VER.txt"
 
 
+setlocal enabledelayedexpansion
+
 set paramDumpTitle=!paramDumpTitle:~1,64!
 set paramDumpTitleID=!paramDumpTitleID:~1,64!
 set paramDumpVersion=!paramDumpVersion:~1,64!
-::set paramDumpVersionTargetApp=!paramDumpVersionApp:~1,64!
 set paramDumpVersionApp=!paramDumpVersionApp:~1,64!
 
 echo !paramDumpTitle!>"%root%\temp\TEMP_PARAM_SFO_TITLE.txt"
 echo !paramDumpTitleID!>"%root%\temp\TEMP_PARAM_SFO_TITLE_ID.txt"
 echo !paramDumpVersion!>"%root%\temp\TEMP_PARAM_SFO_VERSION.txt"
-::echo !paramDumpVersionTargetApp!>"%root%\temp\TEMP_PARAM_SFO_TARGET_APP_VER.txt"
 echo !paramDumpVersionApp!>"%root%\temp\TEMP_PARAM_SFO_APP_VER.txt"
+
+
+:: Get first 4 characters of TITLE_ID
+set /p titleIDLetterCodeTemp=<"%root%\temp\TEMP_PARAM_SFO_TITLE_ID.txt"
+set titleIDLetterCodeTemp=!titleIDLetterCodeTemp:~0,-5!
+echo !titleIDLetterCodeTemp!>"%root%\temp\TEMP_CONVERT_TITLE_LETTERCODE.txt"
+
+:: Get last 5 digits of TITLE_ID
+set /p titleIDNumberCodeTemp=<"%root%\temp\TEMP_PARAM_SFO_TITLE_ID.txt"
+set titleIDNumberCodeTemp=!titleIDNumberCodeTemp:~4,9!
+echo !titleIDNumberCodeTemp!>"%root%\temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt"
+
+endlocal
+
 
 set /p paramDumpTitle=<"%root%\temp\TEMP_PARAM_SFO_TITLE.txt"
 set /p paramDumpTitleID=<"%root%\temp\TEMP_PARAM_SFO_TITLE_ID.txt"
 set /p paramDumpVersion=<"%root%\temp\TEMP_PARAM_SFO_VERSION.txt"
-::set /p paramDumpVersionTargetApp=<"%root%\temp\TEMP_PARAM_SFO_TARGET_APP_VER.txt"
 set /p paramDumpVersionApp=<"%root%\temp\TEMP_PARAM_SFO_APP_VER.txt"
-
-::echo Title: %paramDumpTitle%
-::echo Title ID: %paramDumpTitleID%
-::echo Version: %paramDumpVersion%
-::echo Target App Version: %paramDumpVersionTargetApp%
-::echo App Version: %paramDumpVersionApp%
-::pause
 
 
 :: Get conversion TITLE_ID
-for /f "tokens=*" %%a in ('type %paramDumpTitleID%') do (
+for /f "tokens=*" %%a in ('type temp\TEMP_PARAM_SFO_TITLE_ID.txt') do (
 	echo %%a>"%root%\temp\TEMP_CONVERT_TITLE_ID.txt"
 )
 
-:: Get first 4 characters of TITLE_ID
-set /p titleIDLetterCodeTemp=<"%root%\temp\TEMP_CONVERT_TITLE_ID.txt"
-set titleIDLetterCodeTemp=!titleIDLetterCodeTemp:~0,-5!
-echo !titleIDLetterCodeTemp!>"%root%\temp\TEMP_CONVERT_TITLE_LETTERCODE.txt"
 set /p titleIDLetterCodeTemp=<"%root%\temp\TEMP_CONVERT_TITLE_LETTERCODE.txt"
-
-:: Get last 5 digits of TITLE_ID
-set /p titleIDNumberCodeTemp=<"%root%\temp\TEMP_CONVERT_TITLE_ID.txt"
-set titleIDNumberCodeTemp=!titleIDNumberCodeTemp:~4,9!
-echo !titleIDNumberCodeTemp!>"%root%\temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt"
 set /p titleIDNumberCodeTemp=<"%root%\temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt"
 
 :: Set new converted TITLE_ID
@@ -267,26 +255,30 @@ if %filetypes%==4 type list.txt | findstr /i /v ".sdat .edat .sprx .self EBOOT.B
 del list.txt
 rename temp.txt list.txt
 
-Set infile=list.txt
-Set find=%CD%\PS3_GAME\
-Set replace=
+
+:: Convert to sdat all files from the USRDIR folder
+@echo on
+setlocal enabledelayedexpansion
+
+set infile=list.txt
+set find=%CD%\PS3_GAME\
+set replace=
 
 
 for /F "tokens=*" %%n in (!infile!) do (
 set LINE=%%n
 set TMPR=!LINE:%find%=%replace%!
-Echo !TMPR!>>TMP.TXT
+echo !TMPR!>>TMP.TXT
 )
 move TMP.TXT %infile%
 
-:: Convert to sdat all files from the USRDIR folder
-@echo on
 for /f "tokens=*" %%B in (!infile!) do make_npdata -e "PS3_GAME\%%~B" "%gameID%\%%~B" 0 1 3 0 16
 
 endlocal
 
 
 :: Create EDAT
+@echo off
 
 if %licenseStatus%==0 (
 xcopy /y "PS3_GAME\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
@@ -296,23 +288,31 @@ echo.
 echo No License Found!
 echo.
 echo.
-echo When the KDW app opens, press C and ENTER to create a new LIC.DAT
+echo When the KDW app opens, press C then 1 and ENTER to create a new LIC.DAT
 echo.
 echo.
 
-"%root%\kdw_license_gen.exe"
+start "" "%root%\kdw_license_gen.exe"
 
-set waitTime=3
-%wait%
+echo.
+echo.
+echo.
+echo Press ENTER when license has been created....
+echo.
+echo.
+echo.
+echo.
+pause>nul
 
-mkdir "PS3_GAME\LICDIR"
 xcopy /y "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "PS3_GAME\LICDIR\LIC.DAT"
 
 set licenseStatus=1
 
 )
 
+
 if %licenseStatus%==1 (
+
 echo.
 echo.
 echo Creating New License....
@@ -325,22 +325,21 @@ make_npdata -e "PS3_GAME\LICDIR\LIC.DAT" "%gameID%\LICDIR\LIC.EDAT" 1 1 3 0 16 3
 
 
 :: Cleaning Temp Files
-del /q /f %infile%>nul
-del /f /q temp\PARAM_SFO_TITLE.txt>nul
-del /f /q temp\TEMP_PARAM_SFO_TITLE.txt>nul
-del /f /q temp\PARAM_SFO_TITLE_ID.txt>nul
-del /f /q temp\TEMP_PARAM_SFO_TITLE_ID.txt>nul
-del /f /q temp\PARAM_SFO_VERSION.txt>nul
-del /f /q temp\TEMP_PARAM_SFO_VERSION.txt>nul
-del /f /q temp\PARAM_SFO_TARGET_APP_VER.txt>nul
-del /f /q temp\TEMP_PARAM_SFO_TARGET_APP_VER.txt>nul
-del /f /q temp\PARAM_SFO_APP_VER.txt>nul
-del /f /q temp\TEMP_PARAM_SFO_APP_VER.txt>nul
-del /f /q temp\TEMP_CONVERT_TITLE_LETTERCODE.txt>nul
-del /f /q temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt>nul
+del /q /f %infile%
+if exist "temp\PARAM_SFO_TITLE.txt" del /f /q "temp\PARAM_SFO_TITLE.txt"
+if exist "temp\TEMP_PARAM_SFO_TITLE.txt" del /f /q "temp\TEMP_PARAM_SFO_TITLE.txt"
+if exist "temp\PARAM_SFO_TITLE_ID.txt" del /f /q "temp\PARAM_SFO_TITLE_ID.txt"
+if exist "temp\TEMP_PARAM_SFO_TITLE_ID.txt" del /f /q "temp\TEMP_PARAM_SFO_TITLE_ID.txt"
+if exist "temp\PARAM_SFO_VERSION.txt" del /f /q "temp\PARAM_SFO_VERSION.txt"
+if exist "temp\TEMP_PARAM_SFO_VERSION.txt" del /f /q "temp\TEMP_PARAM_SFO_VERSION.txt"
+if exist "temp\PARAM_SFO_TARGET_APP_VER.txt" del /f /q "temp\PARAM_SFO_TARGET_APP_VER.txt"
+if exist "temp\TEMP_PARAM_SFO_TARGET_APP_VER.txt" del /f /q "temp\TEMP_PARAM_SFO_TARGET_APP_VER.txt"
+if exist "temp\PARAM_SFO_APP_VER.txt" del /f /q "temp\PARAM_SFO_APP_VER.txt"
+if exist "temp\TEMP_PARAM_SFO_APP_VER.txt" del /f /q "temp\TEMP_PARAM_SFO_APP_VER.txt"
+if exist "temp\TEMP_CONVERT_TITLE_LETTERCODE.txt" del /f /q "temp\TEMP_CONVERT_TITLE_LETTERCODE.txt"
+if exist "temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt" del /f /q "temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt"
 
 :: Finished
-@echo off
 color 0a
 echo.
 echo.
