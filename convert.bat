@@ -34,20 +34,20 @@ set titleIDNumberCodeTemp=00000
 
 :: Set Root Path
 set root=%~dp0
-set toolsPath=%root%\tool
+set binPath=%root%\bin
 
 :: Set Tool Variables
-set dklic_validator="%toolsPath%\dklic_validator.exe"
-set HashConsole="%toolsPath%\HashConsole.exe"
-set klic_bruteforcer="%toolsPath%\klic_bruteforcer.exe"
-set make_c00_edat="%toolsPath%\make_c00_edat.exe"
-set make_npdata="%toolsPath%\make_npdata.exe"
-set make_npdata_old="%toolsPath%\make_npdata_old.exe"
-set ps3xport="%toolsPath%\ps3xport.exe"
-set rap2rifkey="%toolsPath%\rap2rifkey.exe"
-set sfk="%toolsPath%\sfk.exe"
-set sfo_extractor="%toolsPath%\sfo_extractor.exe"
-set sfoprint="%toolsPath%\sfoprint.exe"
+set dklic_validator="%binPath%\dklic_validator.exe"
+set HashConsole="%binPath%\HashConsole.exe"
+set klic_bruteforcer="%binPath%\klic_bruteforcer.exe"
+set make_c00_edat="%binPath%\make_c00_edat.exe"
+set make_npdata="%binPath%\make_npdata.exe"
+set make_npdata_old="%binPath%\make_npdata_old.exe"
+set ps3xport="%binPath%\ps3xport.exe"
+set rap2rifkey="%binPath%\rap2rifkey.exe"
+set sfk="%binPath%\sfk.exe"
+set sfo_extractor="%binPath%\sfo_extractor.exe"
+set sfoprint="%binPath%\sfoprint.exe"
 
 :: Dump PARAM.SFO Info
 %sfoprint% %root%\PS3_GAME\PARAM.SFO TITLE>"%root%\temp\PARAM_SFO_TITLE.txt"
