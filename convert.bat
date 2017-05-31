@@ -35,6 +35,7 @@ set titleIDNumberCodeTemp=00000
 :: Set Root Path
 set root=%~dp0
 set binPath=%root%\bin
+::set binPath=%root%\tool
 
 :: Set Tool Variables
 set dklic_validator="%binPath%\dklic_validator.exe"
@@ -283,6 +284,8 @@ endlocal
 if %licenseStatus%==0 (
 copy /y "PS3_GAME\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
 
+color 0b
+
 echo.
 echo.
 echo No License Found!
@@ -312,6 +315,8 @@ set licenseStatus=1
 
 
 if %licenseStatus%==1 (
+
+color 0e
 
 echo.
 echo.
