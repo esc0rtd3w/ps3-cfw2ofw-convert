@@ -7,7 +7,9 @@
 :reset
 cls
 
-title PS3 CFW to OFW Game and App Converter v0.2                      esc0rtd3w 2017
+set scriptVersion=0.3
+
+title PS3 CFW to OFW Game and App Converter v%scriptVersion%                      esc0rtd3w 2017
 
 color 0e
 
@@ -17,6 +19,7 @@ set wait=ping -n %waitTime% 127.0.0.1
 set prefixURL=https://
 set updateXML=0
 set updateLink=0
+set updatePackageAvailable=1
 
 set licenseStatus=1
 
@@ -50,6 +53,7 @@ if exist "%root%\tool\make_npdata.exe" set binPath=%root%\tool
 
 
 :: Set Tool Variables
+set cocolor="%binPath%\cocolor.exe"
 set dklic_validator="%binPath%\dklic_validator.exe"
 set HashConsole="%binPath%\HashConsole.exe"
 set klic_bruteforcer="%binPath%\klic_bruteforcer.exe"
@@ -67,6 +71,9 @@ set wget="%binPath%\wget.exe"
 :: DONE SETTING MAIN VARIABLES
 :: -------------------------------------------------------------
 
+:: Pre-Clean Temp Files
+if exist "temp\TEMP_*.txt" del /f /q "temp\PARAM_*.txt"
+if exist "temp\TEMP_*.txt" del /f /q "temp\TEMP_*.txt"
 
 :: Loading Text
 echo Preparing PS3 CFW to OFW Game and App Converter....
@@ -287,13 +294,18 @@ set /p urlTemp5=<"%root%\temp\TEMP_URL_5_%paramDumpTitleID%.txt"
 set /p urlTemp6=<"%root%\temp\TEMP_URL_6_%paramDumpTitleID%.txt"
 set /p urlTemp7=<"%root%\temp\TEMP_URL_7_%paramDumpTitleID%.txt"
 
-set /p updateXML=<"%root%\temp\%paramDumpTitleID%.txt"
 
+::set /p updateXML=<"%root%\temp\TEMP_%paramDumpTitleID%.txt"
 set updateLink=%prefixURL%%urlTemp1%/%urlTemp2%/%urlTemp3%/%urlTemp4%/%urlTemp5%/%urlTemp6%/%urlTemp7%.pkg
 
 
+:: Check For Blank XML
+if not defined urlTemp7 set updatePackageAvailable=0
+
+
+
 :: Fix Title After WGET Operation
-title PS3 CFW to OFW Game and App Converter v0.2                      esc0rtd3w 2017
+title PS3 CFW to OFW Game and App Converter v%scriptVersion%                      esc0rtd3w 2017
 
 
 :: Main Menu
@@ -305,9 +317,14 @@ set gameID=%convertedTitleID%
 
 cls
 echo -------------------------------------------------------------------------------
+%cocolor% 0b
 echo Detected Game: [%paramDumpTitle%] [%paramDumpTitleID%] [%paramDumpVersion%] [%paramDumpVersionApp%]
 echo.
-echo Update Package: [%urlTemp7%]
+if %updatePackageAvailable%==1 %cocolor% 0a
+if %updatePackageAvailable%==1 echo Update Package: [%urlTemp7%]
+if %updatePackageAvailable%==0 %cocolor% 0c
+if %updatePackageAvailable%==0 echo Update Package: [UPDATE NOT AVAILABLE]
+%cocolor% 0e
 echo -------------------------------------------------------------------------------
 echo.
 echo Disc                         HDD
@@ -496,6 +513,7 @@ if exist "temp\TEMP_CONVERT_TITLE_LETTERCODE.txt" del /f /q "temp\TEMP_CONVERT_T
 if exist "temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt" del /f /q "temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt"
 if exist "temp\TEMP_CONVERT_TITLE_ID.txt" del /f /q "temp\TEMP_CONVERT_TITLE_ID.txt"
 
+if exist "temp\TEMP_*.txt" del /f /q "temp\PARAM_*.txt"
 if exist "temp\TEMP_*.txt" del /f /q "temp\TEMP_*.txt"
 if exist "temp\%paramDumpTitleID%.txt" del /f /q "temp\%paramDumpTitleID%.txt"
 
