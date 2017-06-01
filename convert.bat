@@ -48,9 +48,6 @@ set root=%cd%
 if exist "%root%\bin\make_npdata.exe" set binPath=%root%\bin
 if exist "%root%\tool\make_npdata.exe" set binPath=%root%\tool
 
-:: Set Default PS3_GAME Directory
-set PS3_GAME=%root%\PS3_GAME
-
 
 :: Set Tool Variables
 set dklic_validator="%binPath%\dklic_validator.exe"
@@ -65,6 +62,65 @@ set sfk="%binPath%\sfk.exe"
 set sfo_extractor="%binPath%\sfo_extractor.exe"
 set sfoprint="%binPath%\sfoprint.exe"
 set wget="%binPath%\wget.exe"
+
+:: -------------------------------------------------------------
+:: DONE SETTING MAIN VARIABLES
+:: -------------------------------------------------------------
+
+
+:: Loading Text
+echo Preparing PS3 CFW to OFW Game and App Converter....
+
+:: Wait a second
+set waitTime=2
+%wait%>nul
+
+
+:: Set Default PS3_GAME Directory
+set PS3_GAME=%root%\PS3_GAME
+set PS3_GAME_CHOICE=1
+
+cls
+echo Enter Location For PS3_GAME Directory and press ENTER:
+echo.
+echo.
+echo.
+echo 1) Default
+echo.
+echo 2) Custom
+echo.
+echo.
+echo.
+echo.
+echo Just press ENTER to use defaults....
+echo.
+echo.
+
+set /p PS3_GAME_CHOICE=
+
+if %PS3_GAME_CHOICE% gtr 2 goto reset
+
+if %PS3_GAME_CHOICE%==1 set PS3_GAME=%root%\PS3_GAME
+if %PS3_GAME_CHOICE%==2 goto customDir
+
+goto start
+
+
+:customDir
+
+cls
+echo Drag or type your PS3_GAME Folder Into This Window and Press ENTER:
+echo.
+echo.
+
+set /p PS3_GAME=
+
+goto start
+
+
+
+:start
+cls
 
 :: Dump PARAM.SFO Info
 %sfoprint% %PS3_GAME%\PARAM.SFO TITLE>"%root%\temp\PARAM_SFO_TITLE.txt"
