@@ -48,6 +48,9 @@ set root=%cd%
 if exist "%root%\bin\make_npdata.exe" set binPath=%root%\bin
 if exist "%root%\tool\make_npdata.exe" set binPath=%root%\tool
 
+:: Set Default PS3_GAME Directory
+set PS3_GAME=%root%\PS3_GAME
+
 
 :: Set Tool Variables
 set dklic_validator="%binPath%\dklic_validator.exe"
@@ -64,10 +67,10 @@ set sfoprint="%binPath%\sfoprint.exe"
 set wget="%binPath%\wget.exe"
 
 :: Dump PARAM.SFO Info
-%sfoprint% %root%\PS3_GAME\PARAM.SFO TITLE>"%root%\temp\PARAM_SFO_TITLE.txt"
-%sfoprint% %root%\PS3_GAME\PARAM.SFO TITLE_ID>"%root%\temp\PARAM_SFO_TITLE_ID.txt"
-%sfoprint% %root%\PS3_GAME\PARAM.SFO VERSION>"%root%\temp\PARAM_SFO_VERSION.txt"
-%sfoprint% %root%\PS3_GAME\PARAM.SFO APP_VER>"%root%\temp\PARAM_SFO_APP_VER.txt"
+%sfoprint% %PS3_GAME%\PARAM.SFO TITLE>"%root%\temp\PARAM_SFO_TITLE.txt"
+%sfoprint% %PS3_GAME%\PARAM.SFO TITLE_ID>"%root%\temp\PARAM_SFO_TITLE_ID.txt"
+%sfoprint% %PS3_GAME%\PARAM.SFO VERSION>"%root%\temp\PARAM_SFO_VERSION.txt"
+%sfoprint% %PS3_GAME%\PARAM.SFO APP_VER>"%root%\temp\PARAM_SFO_APP_VER.txt"
 
 
 :: Loading Text
@@ -78,7 +81,7 @@ set waitTime=2
 %wait%>nul
 
 :: Check for game existance
-if not exist "%root%\PS3_GAME" goto fail
+if not exist "%PS3_GAME%" goto fail
 ::if not exist "%root%\PS3_GAME\PARAM.SFO" goto fail
 
 :: Clear Screen After Dumping Info
@@ -233,6 +236,9 @@ set /p updateXML=<"%root%\temp\%paramDumpTitleID%.txt"
 set updateLink=%prefixURL%%urlTemp1%/%urlTemp2%/%urlTemp3%/%urlTemp4%/%urlTemp5%/%urlTemp6%/%urlTemp7%.pkg
 
 
+:: Fix Title After WGET Operation
+title PS3 CFW to OFW Game and App Converter v0.2                      esc0rtd3w 2017
+
 
 :: Main Menu
 
@@ -307,29 +313,29 @@ if %filetypes% gtr 4 goto notConvert
 
 
 :: Check for a LIC.DAT file
-if not exist "PS3_GAME\LICDIR\LIC.DAT" set licenseStatus=0
+if not exist "%PS3_GAME%\LICDIR\LIC.DAT" set licenseStatus=0
 
 :: Copy TROPHY and GAME files
-xcopy "PS3_GAME\TROPDIR" "%gameID%\TROPDIR" /s /i
-xcopy "PS3_GAME\*.*" "%gameID%\*.*"
+xcopy "%PS3_GAME%\TROPDIR" "%gameID%\TROPDIR" /s /i
+xcopy "%PS3_GAME%\*.*" "%gameID%\*.*"
 
-if %filetypes%==1 xcopy "PS3_GAME\USRDIR\*.sdat" "%gameID%\USRDIR\*.sdat" /e
+if %filetypes%==1 xcopy "%PS3_GAME%\USRDIR\*.sdat" "%gameID%\USRDIR\*.sdat" /e
 
-if %filetypes%==2 xcopy "PS3_GAME\USRDIR\*.sdat" "%gameID%\USRDIR\*.sdat" /e
-if %filetypes%==2 xcopy "PS3_GAME\USRDIR\*.edat" "%gameID%\USRDIR\*.edat" /e
+if %filetypes%==2 xcopy "%PS3_GAME%\USRDIR\*.sdat" "%gameID%\USRDIR\*.sdat" /e
+if %filetypes%==2 xcopy "%PS3_GAME%\USRDIR\*.edat" "%gameID%\USRDIR\*.edat" /e
 
-if %filetypes%==3 xcopy "PS3_GAME\USRDIR\*.sdat" "%gameID%\USRDIR\*.sdat" /e
-if %filetypes%==3 xcopy "PS3_GAME\USRDIR\*.edat" "%gameID%\USRDIR\*.edat" /e
-if %filetypes%==3 xcopy "PS3_GAME\USRDIR\*.sprx" "%gameID%\USRDIR\*.sprx" /e
+if %filetypes%==3 xcopy "%PS3_GAME%\USRDIR\*.sdat" "%gameID%\USRDIR\*.sdat" /e
+if %filetypes%==3 xcopy "%PS3_GAME%\USRDIR\*.edat" "%gameID%\USRDIR\*.edat" /e
+if %filetypes%==3 xcopy "%PS3_GAME%\USRDIR\*.sprx" "%gameID%\USRDIR\*.sprx" /e
 
-if %filetypes%==4 xcopy "PS3_GAME\USRDIR\*.sdat" "%gameID%\USRDIR\*.sdat" /e
-if %filetypes%==4 xcopy "PS3_GAME\USRDIR\*.edat" "%gameID%\USRDIR\*.edat" /e
-if %filetypes%==4 xcopy "PS3_GAME\USRDIR\*.sprx" "%gameID%\USRDIR\*.sprx" /e
-if %filetypes%==4 xcopy "PS3_GAME\USRDIR\*.self" "%gameID%\USRDIR\*.self" /e
+if %filetypes%==4 xcopy "%PS3_GAME%\USRDIR\*.sdat" "%gameID%\USRDIR\*.sdat" /e
+if %filetypes%==4 xcopy "%PS3_GAME%\USRDIR\*.edat" "%gameID%\USRDIR\*.edat" /e
+if %filetypes%==4 xcopy "%PS3_GAME%\USRDIR\*.sprx" "%gameID%\USRDIR\*.sprx" /e
+if %filetypes%==4 xcopy "%PS3_GAME%\USRDIR\*.self" "%gameID%\USRDIR\*.self" /e
 
 
 :: Create a list of files and directories of the USRDIR folder. It is necessary for make_npdata
-dir /b /s /a:-d "PS3_GAME\USRDIR\">list.txt
+dir /b /s /a:-d "%PS3_GAME%\USRDIR\">list.txt
 
 if %filetypes%==0 type list.txt | findstr /i /v "EBOOT.BIN" > temp.txt
 if %filetypes%==1 type list.txt | findstr /i /v ".sdat EBOOT.BIN" > temp.txt
@@ -345,7 +351,7 @@ rename temp.txt list.txt
 setlocal enabledelayedexpansion
 
 set infile=list.txt
-set find=%cd%\PS3_GAME\
+set find=%PS3_GAME%\
 set replace=
 
 
@@ -357,7 +363,7 @@ echo !TMPR!>>TMP.TXT
 move TMP.TXT %infile%
 
 @echo on
-for /f "tokens=*" %%B in (!infile!) do make_npdata -e "PS3_GAME\%%~B" "%gameID%\%%~B" 0 1 3 0 16
+for /f "tokens=*" %%B in (!infile!) do make_npdata -e "%PS3_GAME%\%%~B" "%gameID%\%%~B" 0 1 3 0 16
 
 endlocal
 
@@ -366,7 +372,7 @@ endlocal
 @echo off
 
 if %licenseStatus%==0 (
-copy /y "PS3_GAME\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
+copy /y "%PS3_GAME%\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
 
 color 0c
 
@@ -391,7 +397,7 @@ echo.
 echo.
 pause>nul
 
-copy /y "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "PS3_GAME\LICDIR\LIC.DAT"
+copy /y "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "%PS3_GAME%\LICDIR\LIC.DAT"
 
 set licenseStatus=1
 
@@ -408,7 +414,7 @@ echo Creating New License....
 echo.
 echo.
 
-make_npdata -e "PS3_GAME\LICDIR\LIC.DAT" "%gameID%\LICDIR\LIC.EDAT" 1 1 3 0 16 3 00 EP9000-%gameID%_00-0000000000000001 1
+make_npdata -e "%PS3_GAME%\LICDIR\LIC.DAT" "%gameID%\LICDIR\LIC.EDAT" 1 1 3 0 16 3 00 EP9000-%gameID%_00-0000000000000001 1
 )
 
 
