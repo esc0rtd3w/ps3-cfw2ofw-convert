@@ -354,17 +354,24 @@ mkdir "%gameID%\LICDIR"
 
 
 :notConvert
-set filetypes=0
+set filetypes=1
 
 cls
 echo -------------------------------------------------------------------------------
+%cocolor% 0b
 echo Detected Game: [%paramDumpTitle%] [%paramDumpTitleID%] [%paramDumpVersion%] [%paramDumpVersionApp%]
+echo.
+if %updatePackageAvailable%==1 %cocolor% 0a
+if %updatePackageAvailable%==1 echo Update Package: [%urlTemp7%]
+if %updatePackageAvailable%==0 %cocolor% 0c
+if %updatePackageAvailable%==0 echo Update Package: [UPDATE NOT AVAILABLE]
+%cocolor% 0e
 echo -------------------------------------------------------------------------------
 echo.
 echo.
 echo Choose Filetypes NOT To Convert and press ENTER:
 echo.
-echo Default is 0
+echo Default is 1
 echo.
 echo.
 echo.
