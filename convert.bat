@@ -14,6 +14,10 @@ color 0e
 set waitTime=3
 set wait=ping -n %waitTime% 127.0.0.1
 
+set prefixURL=https://
+set updateXML=0
+set updateLink=0
+
 set licenseStatus=1
 
 set filetypes=99
@@ -34,6 +38,7 @@ set titleIDLetterCode=XXXX
 set titleIDLetterCodeTemp=XXXX
 set titleIDNumberCode=00000
 set titleIDNumberCodeTemp=00000
+
 
 :: Set ROOT Path
 ::set root=%~dp0
@@ -56,6 +61,7 @@ set rap2rifkey="%binPath%\rap2rifkey.exe"
 set sfk="%binPath%\sfk.exe"
 set sfo_extractor="%binPath%\sfo_extractor.exe"
 set sfoprint="%binPath%\sfoprint.exe"
+set wget="%binPath%\wget.exe"
 
 :: Dump PARAM.SFO Info
 %sfoprint% %root%\PS3_GAME\PARAM.SFO TITLE>"%root%\temp\PARAM_SFO_TITLE.txt"
@@ -161,6 +167,73 @@ set titleIDNumberCode=%titleIDNumberCodeTemp%
 set convertedTitleID=%titleIDLetterCode%%titleIDNumberCode%
 
 
+:: Set update URL Once PARAM.SFO has been parsed
+set serverUpdateXML=%prefixURL%a0.ww.np.dl.playstation.net/tpl/np/%paramDumpTitleID%/%paramDumpTitleID%-ver.xml
+
+set userAgent=--user-agent="Mozilla/5.0 (PLAYSTATION 3; 4.81)"
+::set header=--header="Accept: text/html"
+
+set disableCertCheck=--no-check-certificate
+
+
+cls
+echo Checking For Updates....
+echo.
+echo.
+
+%wget% %disableCertCheck% %userAgent% -O "%root%\temp\%paramDumpTitleID%.xml" %serverUpdateXML%
+
+for /f "delims=: tokens=2" %%a in ('type temp\%paramDumpTitleID%.xml') do (
+	echo %%a>"%root%\temp\TEMP_%paramDumpTitleID%.txt"
+)
+
+for /f "delims=/ tokens=1" %%a in ('type temp\TEMP_%paramDumpTitleID%.txt') do (
+	echo %%a>"%root%\temp\TEMP_URL_1_%paramDumpTitleID%.txt"
+)
+
+for /f "delims=/ tokens=2" %%a in ('type temp\TEMP_%paramDumpTitleID%.txt') do (
+	echo %%a>"%root%\temp\TEMP_URL_2_%paramDumpTitleID%.txt"
+)
+
+for /f "delims=/ tokens=3" %%a in ('type temp\TEMP_%paramDumpTitleID%.txt') do (
+	echo %%a>"%root%\temp\TEMP_URL_3_%paramDumpTitleID%.txt"
+)
+
+for /f "delims=/ tokens=4" %%a in ('type temp\TEMP_%paramDumpTitleID%.txt') do (
+	echo %%a>"%root%\temp\TEMP_URL_4_%paramDumpTitleID%.txt"
+)
+
+for /f "delims=/ tokens=5" %%a in ('type temp\TEMP_%paramDumpTitleID%.txt') do (
+	echo %%a>"%root%\temp\TEMP_URL_5_%paramDumpTitleID%.txt"
+)
+
+for /f "delims=/ tokens=6" %%a in ('type temp\TEMP_%paramDumpTitleID%.txt') do (
+	echo %%a>"%root%\temp\TEMP_URL_6_%paramDumpTitleID%.txt"
+)
+
+for /f "delims=/ tokens=7" %%a in ('type temp\TEMP_%paramDumpTitleID%.txt') do (
+	echo %%a>"%root%\temp\TEMP_URL_7_%paramDumpTitleID%.txt"
+)
+
+for /f "delims=. tokens=1" %%a in ('type temp\TEMP_URL_7_%paramDumpTitleID%.txt') do (
+	echo %%a>"%root%\temp\TEMP_URL_7_%paramDumpTitleID%.txt"
+)
+
+
+set /p urlTemp1=<"%root%\temp\TEMP_URL_1_%paramDumpTitleID%.txt"
+set /p urlTemp2=<"%root%\temp\TEMP_URL_2_%paramDumpTitleID%.txt"
+set /p urlTemp3=<"%root%\temp\TEMP_URL_3_%paramDumpTitleID%.txt"
+set /p urlTemp4=<"%root%\temp\TEMP_URL_4_%paramDumpTitleID%.txt"
+set /p urlTemp5=<"%root%\temp\TEMP_URL_5_%paramDumpTitleID%.txt"
+set /p urlTemp6=<"%root%\temp\TEMP_URL_6_%paramDumpTitleID%.txt"
+set /p urlTemp7=<"%root%\temp\TEMP_URL_7_%paramDumpTitleID%.txt"
+
+set /p updateXML=<"%root%\temp\%paramDumpTitleID%.txt"
+
+set updateLink=%prefixURL%%urlTemp1%/%urlTemp2%/%urlTemp3%/%urlTemp4%/%urlTemp5%/%urlTemp6%/%urlTemp7%.pkg
+
+
+
 :: Main Menu
 
 :getID
@@ -171,6 +244,8 @@ set gameID=%convertedTitleID%
 cls
 echo -------------------------------------------------------------------------------
 echo Detected Game: [%paramDumpTitle%] [%paramDumpTitleID%] [%paramDumpVersion%] [%paramDumpVersionApp%]
+echo.
+echo Update Package: [%urlTemp7%]
 echo -------------------------------------------------------------------------------
 echo.
 echo Disc                         HDD
@@ -186,11 +261,9 @@ echo BCAS12345                    NPHA12345
 echo BLKS12345                    NPKB12345
 echo BCKS12345                    NPKA12345
 echo.
-echo.
 echo Enter Game ID and press ENTER or just press ENTER to use defaults:
 echo.
 echo Suggested Conversion Name: [%convertedTitleID%]
-echo.
 echo.
 
 set /p gameID=
@@ -346,6 +419,7 @@ echo.>"%root%\%gameID%\USRDIR\EP9000-%gameID%_00-0000000000000001.txt"
 :: Cleaning Temp Files
 if exist %infile% del /q /f %infile%
 if exist "list.txt" del /f /q "list.txt"
+
 if exist "temp\PARAM_SFO_TITLE.txt" del /f /q "temp\PARAM_SFO_TITLE.txt"
 if exist "temp\TEMP_PARAM_SFO_TITLE.txt" del /f /q "temp\TEMP_PARAM_SFO_TITLE.txt"
 if exist "temp\PARAM_SFO_TITLE_ID.txt" del /f /q "temp\PARAM_SFO_TITLE_ID.txt"
@@ -359,6 +433,9 @@ if exist "temp\TEMP_PARAM_SFO_APP_VER.txt" del /f /q "temp\TEMP_PARAM_SFO_APP_VE
 if exist "temp\TEMP_CONVERT_TITLE_LETTERCODE.txt" del /f /q "temp\TEMP_CONVERT_TITLE_LETTERCODE.txt"
 if exist "temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt" del /f /q "temp\TEMP_CONVERT_TITLE_NUMBERCODE.txt"
 if exist "temp\TEMP_CONVERT_TITLE_ID.txt" del /f /q "temp\TEMP_CONVERT_TITLE_ID.txt"
+
+if exist "temp\TEMP_*.txt" del /f /q "temp\TEMP_*.txt"
+if exist "temp\%paramDumpTitleID%.txt" del /f /q "temp\%paramDumpTitleID%.txt"
 
 
 :: Finished
