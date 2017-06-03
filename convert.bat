@@ -56,6 +56,7 @@ if exist "%root%\tool\make_npdata.exe" set binPath=%root%\tool
 set cocolor="%binPath%\cocolor.exe"
 set dklic_validator="%binPath%\dklic_validator.exe"
 set HashConsole="%binPath%\HashConsole.exe"
+set kdw_license_gen="%binPath%\kdw_license_gen.exe"
 set klic_bruteforcer="%binPath%\klic_bruteforcer.exe"
 set make_c00_edat="%binPath%\make_c00_edat.exe"
 set make_npdata="%binPath%\make_npdata.exe"
@@ -452,7 +453,7 @@ endlocal
 @echo off
 
 if %licenseStatus%==0 (
-copy /y "%PS3_GAME%\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
+copy /y "%PS3_GAME%\PARAM.SFO" "%root%\%binPath%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
 
 color 0c
 
@@ -465,7 +466,7 @@ echo When the KDW app opens, press C then 1 and ENTER to create a new LIC.DAT
 echo.
 echo.
 
-start "" "%root%\kdw_license_gen.exe"
+start "" %kdw_license_gen%
 
 echo.
 echo.
@@ -477,7 +478,7 @@ echo.
 echo.
 pause>nul
 
-copy /y "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "%PS3_GAME%\LICDIR\LIC.DAT"
+copy /y "%root%\%binPath%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "%PS3_GAME%\LICDIR\LIC.DAT"
 
 set licenseStatus=1
 
