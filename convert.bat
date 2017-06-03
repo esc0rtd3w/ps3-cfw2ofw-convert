@@ -57,7 +57,6 @@ set cocolor="%binPath%\cocolor.exe"
 set dklic_validator="%binPath%\dklic_validator.exe"
 set freedata="%binPath%\freedata.exe"
 set HashConsole="%binPath%\HashConsole.exe"
-set kdw_license_gen="%binPath%\kdw_license_gen.exe"
 set klic_bruteforcer="%binPath%\klic_bruteforcer.exe"
 set make_c00_edat="%binPath%\make_c00_edat.exe"
 set make_npdata="%binPath%\make_npdata.exe"
@@ -72,6 +71,7 @@ set sfo_extractor="%binPath%\sfo_extractor.exe"
 set sfoprint="%binPath%\sfoprint.exe"
 set wget="%binPath%\wget.exe"
 
+set kdw_license_gen="%root%\kdw_license_gen.exe"
 :: -------------------------------------------------------------
 :: DONE SETTING MAIN VARIABLES
 :: -------------------------------------------------------------
@@ -457,7 +457,7 @@ endlocal
 @echo off
 
 if %licenseStatus%==0 (
-copy /y "%PS3_GAME%\PARAM.SFO" "%root%\%binPath%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
+copy /y "%PS3_GAME%\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
 
 color 0c
 
@@ -482,7 +482,7 @@ echo.
 echo.
 pause>nul
 
-copy /y "%root%\%binPath%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "%PS3_GAME%\LICDIR\LIC.DAT"
+copy /y "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "%PS3_GAME%\LICDIR\LIC.DAT"
 
 set licenseStatus=1
 
