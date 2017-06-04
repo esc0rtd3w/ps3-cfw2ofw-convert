@@ -400,6 +400,9 @@ echo.
 
 set /p doUpdate=
 
+if not exist "%root%\temp\update" mkdir "%root%\temp\update"
+if %doUpdate%==1 %wget% %disableCertCheck% %userAgent% -O "%root%\temp\update\%urlTemp7%.pkg" %updateLink%
+
 goto notConvert
 
 
