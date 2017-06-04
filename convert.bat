@@ -16,6 +16,8 @@ color 0e
 set waitTime=3
 set wait=ping -n %waitTime% 127.0.0.1
 
+set askUpdate=1
+set doUpdate=1
 set prefixURL=https://
 set updateXML=0
 set updateLink=0
@@ -71,7 +73,7 @@ set sfo_extractor="%binPath%\sfo_extractor.exe"
 set sfoprint="%binPath%\sfoprint.exe"
 set wget="%binPath%\wget.exe"
 
-set kdw_license_gen="%root%\kdw_license_gen.exe"
+set kdw_license_gen="%binPath%\kdw-licdat\kdw_license_gen.exe"
 :: -------------------------------------------------------------
 :: DONE SETTING MAIN VARIABLES
 :: -------------------------------------------------------------
@@ -357,6 +359,50 @@ set /p gameID=
 mkdir "%gameID%"
 mkdir "%gameID%\LICDIR"
 
+if %askUpdate%==1 goto getPKG
+
+goto notConvert
+
+
+:getPKG
+:: Download Updates
+cls
+
+echo -------------------------------------------------------------------------------
+%cocolor% 0b
+echo Detected Game: [%paramDumpTitle%] [%paramDumpTitleID%] [%paramDumpVersion%] [%paramDumpVersionApp%]
+echo.
+if %updatePackageAvailable%==1 %cocolor% 0a
+if %updatePackageAvailable%==1 echo Update Package: [%urlTemp7%]
+if %updatePackageAvailable%==0 %cocolor% 0c
+if %updatePackageAvailable%==0 echo Update Package: [UPDATE NOT AVAILABLE]
+%cocolor% 0e
+echo -------------------------------------------------------------------------------
+echo.
+echo.
+echo Would you like to download all available updates?
+echo.
+echo.
+echo Default is YES
+echo.
+echo.
+echo.
+echo 1) Yes
+echo.
+echo 2) No
+echo.
+echo.
+echo.
+echo.
+echo Make a selection and press ENTER....
+echo.
+echo.
+
+set /p doUpdate=
+
+goto notConvert
+
+
 
 :notConvert
 set filetypes=1
@@ -449,6 +495,7 @@ move TMP.TXT %infile%
 
 @echo on
 for /f "tokens=*" %%B in (!infile!) do make_npdata -e "%PS3_GAME%\%%~B" "%gameID%\%%~B" 0 1 3 0 16
+@echo off
 
 endlocal
 
@@ -456,8 +503,12 @@ endlocal
 :: Create EDAT
 @echo off
 
+goto makeLIC
+
+
+:makeLIC
 if %licenseStatus%==0 (
-copy /y "%PS3_GAME%\PARAM.SFO" "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
+copy /y "%PS3_GAME%\PARAM.SFO" "%binPath%\kdw-licdat\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
 
 color 0c
 
@@ -482,7 +533,7 @@ echo.
 echo.
 pause>nul
 
-copy /y "%root%\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "%PS3_GAME%\LICDIR\LIC.DAT"
+copy /y "%binPath%\kdw-licdat\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "%PS3_GAME%\LICDIR\LIC.DAT"
 
 set licenseStatus=1
 
@@ -503,10 +554,12 @@ make_npdata -e "%PS3_GAME%\LICDIR\LIC.DAT" "%gameID%\LICDIR\LIC.EDAT" 1 1 3 0 16
 )
 
 
+:dumpTXT
 :: Create text file for info
 echo.>"%root%\%gameID%\USRDIR\EP9000-%gameID%_00-0000000000000001.txt"
 
 
+:doClean
 :: Cleaning Temp Files
 if exist %infile% del /q /f %infile%
 if exist "list.txt" del /f /q "list.txt"
@@ -531,6 +584,7 @@ if exist "temp\%paramDumpTitleID%.txt" del /f /q "temp\%paramDumpTitleID%.txt"
 
 
 :: Finished
+:done
 color 0a
 echo.
 echo.
