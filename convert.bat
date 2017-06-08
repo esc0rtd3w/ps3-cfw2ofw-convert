@@ -19,6 +19,8 @@ color 0e
 set waitTime=3
 set wait=ping -n %waitTime% 127.0.0.1
 
+set failType=0
+
 set askUpdate=1
 set doUpdate=1
 set prefixURL=https://
@@ -167,8 +169,9 @@ set waitTime=2
 %wait%>nul
 
 :: Check for game existance
-if not exist "%PS3_GAME%" goto fail
-::if not exist "%root%\PS3_GAME\PARAM.SFO" goto fail
+if not exist "%PS3_GAME%" set failType=1&&goto fail
+if not exist "%root%\PS3_GAME\PARAM.SFO" set failType=2&&goto fail
+::if not exist "%root%\PS3_GAME\LICDIR\LIC.DAT" set failType=3&&goto fail
 
 :: Clear Screen After Dumping Info
 cls
@@ -343,6 +346,10 @@ set /p updatesURL=<"%root%\temp\TEMP_xml_url.txt"
 ::pause
 
 
+:: Skipping XML update parsing
+:skipUpd
+
+
 :: Dump Update XML Info
 for /f "delims=: tokens=2" %%a in ('type temp\%paramDumpTitleID%.xml') do (
 	echo %%a>"%root%\temp\TEMP_%paramDumpTitleID%.txt"
@@ -389,9 +396,6 @@ set /p urlTemp5=<"%root%\temp\TEMP_URL_5_%paramDumpTitleID%.txt"
 set /p urlTemp6=<"%root%\temp\TEMP_URL_6_%paramDumpTitleID%.txt"
 set /p urlTemp7=<"%root%\temp\TEMP_URL_7_%paramDumpTitleID%.txt"
 
-
-:: Skipping XML update parsing
-:skipUpd
 
 if %isBlankXML%==1 set updateLink=%prefixURL%%urlTemp1%/%urlTemp2%/%urlTemp3%/%urlTemp4%/%urlTemp5%/%urlTemp6%/%urlTemp7%.pkg
 if %isBlankXML%==0 set updateLink=%updatesURL%
@@ -694,9 +698,14 @@ goto end
 :fail
 color 0c
 cls
-echo The PS3_GAME Directory Is Missing!
+if %failType%==1 echo The PS3_GAME Directory Is Missing!
+if %failType%==2 echo The PS3_GAME\PARAM.SFO Is Missing!
+::if %failType%==3 echo The PS3_GAME\LICDIR\LIC.DAT Is Missing!
 echo.
-echo Please Copy From Disc To %root%
+if %failType%==1 echo Please Copy From Disc To %root%
+if %failType%==2 echo Please Copy PS3_GAME Directory From Disc To %root%
+::if %failType%==3 echo Please Create License and Copy To %root%\LICDIR\
+::if %failType%==3 goto makeLIC
 echo.
 echo.
 echo.
