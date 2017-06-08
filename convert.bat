@@ -26,6 +26,15 @@ set updateXML=0
 set updateLink=0
 set updatePackageAvailable=1
 
+set isBlankXML=0
+
+set updatesAvailable=0
+set updatesTitleID=0
+set updatesName=0
+set updatesVersion=0
+set updatesSize=0
+set updatesURL=0
+
 set licenseStatus=1
 
 set filetypes=99
@@ -97,6 +106,9 @@ set waitTime=2
 :: Set Default PS3_GAME Directory
 set PS3_GAME=%root%\PS3_GAME
 set PS3_GAME_CHOICE=1
+
+:: Skip Custom PS3_GAME Choice Until Fixed (20170608)
+goto start
 
 cls
 echo Enter Location For PS3_GAME Directory and press ENTER:
@@ -263,14 +275,21 @@ echo.
 %wget% %disableCertCheck% %userAgent% -O "%root%\temp\%paramDumpTitleID%.xml" %serverUpdateXML%
 
 
+:: Check for blank XML
+for %%a in ("temp\%paramDumpTitleID%.xml") do (
+  if %%~za equ 0 (
+	set isBlankXML=1
+  ) else (
+	set isBlankXML=0
+  )
+)
+
+
+:: If XML is blank, skip parsing XML file
+if %isBlankXML%==1 goto skipUpd
+
+
 :: XML Functions
-set xmlShowStructure=%xml% el -v "temp\%paramDumpTitleID%.xml"
-set xmlCountElements=%xml% sel -t -v "count(/titlepatch/tag/package)" "temp\%paramDumpTitleID%.xml"
-set xmlTitleID=%xml% sel -t -m "/titlepatch" -v @titleid "temp\%paramDumpTitleID%.xml"
-set xmlName=%xml% sel -t -m "/titlepatch/tag/package/paramsfo" -v TITLE "temp\%paramDumpTitleID%.xml"
-set xmlVersion=%xml% sel -t -m "/titlepatch/tag/package" -v @version "temp\%paramDumpTitleID%.xml"
-set xmlSize=%xml% sel -t -m "/titlepatch/tag/package" -v @size "temp\%paramDumpTitleID%.xml"
-set xmlURL=%xml% sel -t -m "/titlepatch/tag/package" -v @url "temp\%paramDumpTitleID%.xml"
 
 ::%xmlShowStructure%
 
@@ -292,6 +311,14 @@ set xmlURL=%xml% sel -t -m "/titlepatch/tag/package" -v @url "temp\%paramDumpTit
 ::titlepatch/tag/package/paramsfo
 ::titlepatch/tag/package/paramsfo/TITLE
 
+set xmlShowStructure=%xml% el -v "temp\%paramDumpTitleID%.xml"
+set xmlCountElements=%xml% sel -t -v "count(/titlepatch/tag/package)" "temp\%paramDumpTitleID%.xml"
+set xmlTitleID=%xml% sel -t -m "/titlepatch" -v @titleid "temp\%paramDumpTitleID%.xml"
+set xmlName=%xml% sel -t -m "/titlepatch/tag/package/paramsfo" -v TITLE "temp\%paramDumpTitleID%.xml"
+set xmlVersion=%xml% sel -t -m "/titlepatch/tag/package" -v @version "temp\%paramDumpTitleID%.xml"
+set xmlSize=%xml% sel -t -m "/titlepatch/tag/package" -v @size "temp\%paramDumpTitleID%.xml"
+set xmlURL=%xml% sel -t -m "/titlepatch/tag/package" -v @url "temp\%paramDumpTitleID%.xml"
+
 %xmlCountElements%>"%root%\temp\TEMP_xml_number_of_elements.txt"
 %xmlTitleID%>"%root%\temp\TEMP_xml_title_id.txt"
 %xmlName%>"%root%\temp\TEMP_xml_name.txt"
@@ -310,6 +337,7 @@ set /p updatesURL=<"%root%\temp\TEMP_xml_url.txt"
 ::echo Title ID: %updatesTitleID%
 ::echo.
 ::echo Number of Updates Available: %updatesAvailable%
+::echo Update Version: %updatesVersion%
 ::echo Update Size: %updatesSize%
 ::echo Update URL: %updatesURL%
 ::pause
@@ -362,12 +390,16 @@ set /p urlTemp6=<"%root%\temp\TEMP_URL_6_%paramDumpTitleID%.txt"
 set /p urlTemp7=<"%root%\temp\TEMP_URL_7_%paramDumpTitleID%.txt"
 
 
-::set /p updateXML=<"%root%\temp\TEMP_%paramDumpTitleID%.txt"
-set updateLink=%prefixURL%%urlTemp1%/%urlTemp2%/%urlTemp3%/%urlTemp4%/%urlTemp5%/%urlTemp6%/%urlTemp7%.pkg
+:: Skipping XML update parsing
+:skipUpd
+
+if %isBlankXML%==1 set updateLink=%prefixURL%%urlTemp1%/%urlTemp2%/%urlTemp3%/%urlTemp4%/%urlTemp5%/%urlTemp6%/%urlTemp7%.pkg
+if %isBlankXML%==0 set updateLink=%updatesURL%
 
 
-:: Check For Blank XML
-if not defined urlTemp7 set updatePackageAvailable=0
+:: Set Update Package Status
+::if not defined urlTemp7 set updatePackageAvailable=0
+if %isBlankXML%==1 set updatePackageAvailable=0
 
 
 
