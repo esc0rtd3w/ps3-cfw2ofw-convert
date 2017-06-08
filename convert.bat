@@ -88,6 +88,8 @@ set sfoprint="%binPath%\sfoprint.exe"
 set wget="%binPath%\wget.exe"
 set xml="%binPath%\xml.exe"
 
+set unlockC00="%binPath%\unlock_c00.pkg"
+
 set kdw_license_gen="%binPath%\kdw-licdat\kdw_license_gen.exe"
 :: -------------------------------------------------------------
 :: DONE SETTING MAIN VARIABLES
@@ -152,7 +154,6 @@ goto start
 
 
 :start
-cls
 
 :: Dump PARAM.SFO Info
 %sfoprint% %PS3_GAME%\PARAM.SFO TITLE>"%root%\temp\PARAM_SFO_TITLE.txt"
@@ -162,7 +163,10 @@ cls
 
 
 :: Loading Text
+cls
 echo Loading PS3 CFW to OFW Game and App Converter....
+echo.
+echo.
 
 :: Wait a second
 set waitTime=2
@@ -259,6 +263,7 @@ set titleIDNumberCode=%titleIDNumberCodeTemp%
 set convertedTitleID=%titleIDLetterCode%%titleIDNumberCode%
 
 
+:checkUpd
 :: Set update URL Once PARAM.SFO has been parsed
 set serverUpdateXML=%prefixURL%a0.ww.np.dl.playstation.net/tpl/np/%paramDumpTitleID%/%paramDumpTitleID%-ver.xml
 
