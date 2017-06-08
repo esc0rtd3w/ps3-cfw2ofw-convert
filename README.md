@@ -1,5 +1,5 @@
 # ps3-cfw2ofw-convert
-Modified Script Based on The original convert.bat from maxconsole.com
+Heavily Modified Script Based on The original convert.bat from pspx.ru
 
 ![Image](http://i.imgur.com/D9sY7fx.png)
 <br/><br/>

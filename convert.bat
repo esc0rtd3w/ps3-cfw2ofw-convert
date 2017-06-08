@@ -1,7 +1,7 @@
 @echo off
 
 :: Based on original PS3_OFW_TOOLS_470 convert.bat file
-:: Source http://www.maxconsole.com/threads/playstation-3-backup-games-now-working-on-ofw-v4-70-ps3.43138/
+:: Source http://www.pspx.ru/forum/showthread.php?t=106399
 
 
 :reset
