@@ -5,9 +5,12 @@
 
 
 :reset
+:: Change terminal size
+::mode con lines=27
+
 cls
 
-set scriptVersion=0.3
+set scriptVersion=0.4
 
 title PS3 CFW to OFW Game and App Converter v%scriptVersion%                      esc0rtd3w 2017
 
@@ -72,6 +75,7 @@ set sfk="%binPath%\sfk.exe"
 set sfo_extractor="%binPath%\sfo_extractor.exe"
 set sfoprint="%binPath%\sfoprint.exe"
 set wget="%binPath%\wget.exe"
+set xml="%binPath%\xml.exe"
 
 set kdw_license_gen="%binPath%\kdw-licdat\kdw_license_gen.exe"
 :: -------------------------------------------------------------
@@ -249,13 +253,69 @@ set userAgent=--user-agent="Mozilla/5.0 (PLAYSTATION 3; 4.81)"
 set disableCertCheck=--no-check-certificate
 
 
+
 cls
 echo Checking For Updates....
 echo.
 echo.
 
+:: Download Update XML
 %wget% %disableCertCheck% %userAgent% -O "%root%\temp\%paramDumpTitleID%.xml" %serverUpdateXML%
 
+
+:: XML Functions
+set xmlShowStructure=%xml% el -v "temp\%paramDumpTitleID%.xml"
+set xmlCountElements=%xml% sel -t -v "count(/titlepatch/tag/package)" "temp\%paramDumpTitleID%.xml"
+set xmlTitleID=%xml% sel -t -m "/titlepatch" -v @titleid "temp\%paramDumpTitleID%.xml"
+set xmlName=%xml% sel -t -m "/titlepatch/tag/package/paramsfo" -v TITLE "temp\%paramDumpTitleID%.xml"
+set xmlVersion=%xml% sel -t -m "/titlepatch/tag/package" -v @version "temp\%paramDumpTitleID%.xml"
+set xmlSize=%xml% sel -t -m "/titlepatch/tag/package" -v @size "temp\%paramDumpTitleID%.xml"
+set xmlURL=%xml% sel -t -m "/titlepatch/tag/package" -v @url "temp\%paramDumpTitleID%.xml"
+
+::%xmlShowStructure%
+
+:: Sample Structure
+::titlepatch
+::titlepatch/@status
+::titlepatch/@titleid
+::titlepatch/tag
+::titlepatch/tag/@name
+::titlepatch/tag/@popup
+::titlepatch/tag/@signoff
+::titlepatch/tag/package
+::titlepatch/tag/package/@version
+::titlepatch/tag/package/@size
+::titlepatch/tag/package/@sha1sum
+::titlepatch/tag/package/@url
+::titlepatch/tag/package/@ps3_system_ver
+::titlepatch/tag/package
+::titlepatch/tag/package/paramsfo
+::titlepatch/tag/package/paramsfo/TITLE
+
+%xmlCountElements%>"%root%\temp\TEMP_xml_number_of_elements.txt"
+%xmlTitleID%>"%root%\temp\TEMP_xml_title_id.txt"
+%xmlName%>"%root%\temp\TEMP_xml_name.txt"
+%xmlVersion%>"%root%\temp\TEMP_xml_version.txt"
+%xmlSize%>"%root%\temp\TEMP_xml_size.txt"
+%xmlURL%>"%root%\temp\TEMP_xml_url.txt"
+
+set /p updatesAvailable=<"%root%\temp\TEMP_xml_number_of_elements.txt"
+set /p updatesTitleID=<"%root%\temp\TEMP_xml_title_id.txt"
+set /p updatesName=<"%root%\temp\TEMP_xml_name.txt"
+set /p updatesVersion=<"%root%\temp\TEMP_xml_version.txt"
+set /p updatesSize=<"%root%\temp\TEMP_xml_size.txt"
+set /p updatesURL=<"%root%\temp\TEMP_xml_url.txt"
+
+::echo Name: %updatesName%
+::echo Title ID: %updatesTitleID%
+::echo.
+::echo Number of Updates Available: %updatesAvailable%
+::echo Update Size: %updatesSize%
+::echo Update URL: %updatesURL%
+::pause
+
+
+:: Dump Update XML Info
 for /f "delims=: tokens=2" %%a in ('type temp\%paramDumpTitleID%.xml') do (
 	echo %%a>"%root%\temp\TEMP_%paramDumpTitleID%.txt"
 )
@@ -390,7 +450,6 @@ echo.
 echo 1) Yes
 echo.
 echo 2) No
-echo.
 echo.
 echo.
 echo.
