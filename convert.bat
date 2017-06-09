@@ -27,6 +27,8 @@ set prefixURL=https://
 set updateXML=0
 set updateLink=0
 set updatePackageAvailable=1
+set multipleUpdates=0
+set packageID=0
 
 set isBlankXML=0
 
@@ -299,8 +301,6 @@ if %isBlankXML%==1 goto skipUpd
 
 :: XML Functions
 
-::%xmlShowStructure%
-
 :: Sample Structure
 ::titlepatch
 ::titlepatch/@status
@@ -319,14 +319,25 @@ if %isBlankXML%==1 goto skipUpd
 ::titlepatch/tag/package/paramsfo
 ::titlepatch/tag/package/paramsfo/TITLE
 
-set xmlShowStructure=%xml% el -v "temp\%paramDumpTitleID%.xml"
+:: XML Functions
+set xmlShowStructureShort=%xml% el "temp\%paramDumpTitleID%.xml"
+set xmlShowStructureLong=%xml% el -a "temp\%paramDumpTitleID%.xml"
+set xmlShowStructureDebug=%xml% el -v "temp\%paramDumpTitleID%.xml"
 set xmlCountElements=%xml% sel -t -v "count(/titlepatch/tag/package)" "temp\%paramDumpTitleID%.xml"
+
+:: Debug Display XML Structure
+::%xmlShowStructureShort%
+%xmlShowStructureLong%
+::%xmlShowStructureDebug%
+
+:: Update Package XML Values
 set xmlTitleID=%xml% sel -t -m "/titlepatch" -v @titleid "temp\%paramDumpTitleID%.xml"
 set xmlName=%xml% sel -t -m "/titlepatch/tag/package/paramsfo" -v TITLE "temp\%paramDumpTitleID%.xml"
 set xmlVersion=%xml% sel -t -m "/titlepatch/tag/package" -v @version "temp\%paramDumpTitleID%.xml"
 set xmlSize=%xml% sel -t -m "/titlepatch/tag/package" -v @size "temp\%paramDumpTitleID%.xml"
 set xmlURL=%xml% sel -t -m "/titlepatch/tag/package" -v @url "temp\%paramDumpTitleID%.xml"
 
+:: Dump Values To Temp Files
 %xmlCountElements%>"%root%\temp\TEMP_xml_number_of_elements.txt"
 %xmlTitleID%>"%root%\temp\TEMP_xml_title_id.txt"
 %xmlName%>"%root%\temp\TEMP_xml_name.txt"
@@ -334,21 +345,47 @@ set xmlURL=%xml% sel -t -m "/titlepatch/tag/package" -v @url "temp\%paramDumpTit
 %xmlSize%>"%root%\temp\TEMP_xml_size.txt"
 %xmlURL%>"%root%\temp\TEMP_xml_url.txt"
 
+:: Set number of available updates from parsed XML values
 set /p updatesAvailable=<"%root%\temp\TEMP_xml_number_of_elements.txt"
+
+:: Check for multiple updates
+if %updatesAvailable% gtr 1 set multipleUpdates=1
+
+:: Set new variables from parsed XML values
 set /p updatesTitleID=<"%root%\temp\TEMP_xml_title_id.txt"
 set /p updatesName=<"%root%\temp\TEMP_xml_name.txt"
 set /p updatesVersion=<"%root%\temp\TEMP_xml_version.txt"
 set /p updatesSize=<"%root%\temp\TEMP_xml_size.txt"
 set /p updatesURL=<"%root%\temp\TEMP_xml_url.txt"
 
+:: Debug Output Testing
+::echo.
+::echo.
 ::echo Name: %updatesName%
 ::echo Title ID: %updatesTitleID%
+::echo.
+::echo Multiple Update Flag: %multipleUpdates%
 ::echo.
 ::echo Number of Updates Available: %updatesAvailable%
 ::echo Update Version: %updatesVersion%
 ::echo Update Size: %updatesSize%
 ::echo Update URL: %updatesURL%
 ::pause
+
+
+::set updatesMax=%updatesAvailable%
+::set updatesCurrent=%updatesMax%
+::set /a charsTotal=5*%updatesMax%
+::set /a charsForLast=%charsTotal%-5
+
+::set updatesVersionFirst=%updatesVersion:~0,5%
+::set updatesVersionLast=%updatesVersion:~25,5%
+	
+::echo charsTotal: %charsTotal%
+::echo updatesVersionFirst: %updatesVersionFirst%
+::echo updatesVersionLast: %updatesVersionLast%
+::pause
+
 
 
 :: Skipping XML update parsing
