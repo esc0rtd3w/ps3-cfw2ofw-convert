@@ -648,7 +648,7 @@ echo !TMPR!>>TMP.TXT
 move TMP.TXT %infile%
 
 @echo on
-for /f "tokens=*" %%B in (!infile!) do make_npdata -e "%PS3_GAME%\%%~B" "%gameID%\%%~B" 0 1 3 0 16
+for /f "tokens=*" %%B in (!infile!) do %make_npdata% -e "%PS3_GAME%\%%~B" "%gameID%\%%~B" 0 1 3 0 16
 @echo off
 
 endlocal
@@ -662,7 +662,7 @@ goto makeLIC
 
 :makeLIC
 if %licenseStatus%==0 (
-copy /y "%PS3_GAME%\PARAM.SFO" "%binPath%\kdw-licdat\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
+xcopy /y /i "%PS3_GAME%\PARAM.SFO" "%binPath%\kdw-licdat\GAMES\CREATE_NEW_LICENSE\PS3_GAME\PARAM.SFO"
 
 color 0c
 
@@ -694,7 +694,7 @@ echo.
 echo.
 pause>nul
 
-copy /y %licenseDatNew% %licenseDatDisc%
+xcopy /y /i %licenseDatNew% %licenseDatDisc%
 
 if exist %licenseDatNew% set licenseStatus=1
 if not exist %licenseDatNew% set licenseStatus=0
@@ -720,11 +720,25 @@ echo Creating New License....
 echo.
 echo.
 
+mkdir %licenseDatNewPath%
+
 ::make_npdata -e %licenseDatDisc% %licenseDatNPD% 1 1 3 0 16 3 00 EP9000-%gameID%_00-0000000000000001 1
 %make_npdata% -e %licenseDatDisc% %licenseDatNPD% 1 1 3 0 16 3 00 EP9000-%gameID%_00-0000000000000001 1
 )
 
 
+echo.
+echo.
+echo.
+echo root: %root%
+echo make_npdata: %make_npdata%
+echo licenseDatDisc: %licenseDatDisc%
+echo licenseDatNPD: %licenseDatNPD%
+echo licenseDatNewPath: %licenseDatNewPath%
+echo licenseStatus: %licenseStatus%
+echo.
+echo.
+pause
 :: --------------------------------------------------------
 :: ---- DO NOT CONTINUE IF THE LICENSE WAS NOT CREATED ----
 :: --------------------------------------------------------
@@ -741,7 +755,7 @@ if exist %infile% del /q /f %infile%
 if exist "list.txt" del /f /q "list.txt"
 
 :: Remove Converted License File From Temp
-if exist %licenseDatNew% del /f /q %licenseDatNew%
+::if exist %licenseDatNew% del /f /q %licenseDatNew%
 ::if exist %licenseDatNewPath% rmdir /s /q %licenseDatNewPath%
 
 if exist "temp\PARAM_SFO_TITLE.txt" del /f /q "temp\PARAM_SFO_TITLE.txt"
