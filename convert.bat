@@ -727,18 +727,19 @@ mkdir %licenseDatNewPath%
 )
 
 
-echo.
-echo.
-echo.
-echo root: %root%
-echo make_npdata: %make_npdata%
-echo licenseDatDisc: %licenseDatDisc%
-echo licenseDatNPD: %licenseDatNPD%
-echo licenseDatNewPath: %licenseDatNewPath%
-echo licenseStatus: %licenseStatus%
-echo.
-echo.
-pause
+::echo.
+::echo.
+::echo.
+::echo root: %root%
+::echo make_npdata: %make_npdata%
+::echo licenseDatDisc: %licenseDatDisc%
+::echo licenseDatNPD: %licenseDatNPD%
+::echo licenseDatNewPath: %licenseDatNewPath%
+::echo licenseStatus: %licenseStatus%
+::echo.
+::echo.
+::pause
+
 :: --------------------------------------------------------
 :: ---- DO NOT CONTINUE IF THE LICENSE WAS NOT CREATED ----
 :: --------------------------------------------------------
