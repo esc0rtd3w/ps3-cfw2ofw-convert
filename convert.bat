@@ -10,7 +10,7 @@
 
 cls
 
-set scriptVersion=0.4
+set scriptVersion=0.5
 
 title PS3 CFW to OFW Game and App Converter v%scriptVersion%                      esc0rtd3w 2017
 
@@ -90,9 +90,16 @@ set sfoprint="%binPath%\sfoprint.exe"
 set wget="%binPath%\wget.exe"
 set xml="%binPath%\xml.exe"
 
+:: Licensing Stuff
 set unlockC00="%binPath%\unlock_c00.pkg"
-
 set kdw_license_gen="%binPath%\kdw-licdat\kdw_license_gen.exe"
+set licenseDatNew="%binPath%\kdw-licdat\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT"
+set licenseDatNewPath="%binPath%\kdw-licdat\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR"
+
+:: These are set once PS3_GAME and NPD Paths are set
+set licenseDatNPD=0
+set licenseDatDisc=0
+
 :: -------------------------------------------------------------
 :: DONE SETTING MAIN VARIABLES
 :: -------------------------------------------------------------
@@ -156,6 +163,9 @@ goto start
 
 
 :start
+
+:: Set LIC.DAT Location For Disc
+set licenseDatDisc="%PS3_GAME%\LICDIR\LIC.DAT"
 
 :: Dump PARAM.SFO Info
 %sfoprint% %PS3_GAME%\PARAM.SFO TITLE>"%root%\temp\PARAM_SFO_TITLE.txt"
@@ -327,7 +337,7 @@ set xmlCountElements=%xml% sel -t -v "count(/titlepatch/tag/package)" "temp\%par
 
 :: Debug Display XML Structure
 ::%xmlShowStructureShort%
-%xmlShowStructureLong%
+::%xmlShowStructureLong%
 ::%xmlShowStructureDebug%
 
 :: Update Package XML Values
@@ -497,6 +507,10 @@ set /p gameID=
 mkdir "%gameID%"
 mkdir "%gameID%\LICDIR"
 
+
+:: Set LIC.DAT Location For Converted NPD
+set licenseDatNPD="%gameID%\LICDIR\LIC.EDAT"
+
 if %askUpdate%==1 goto getPKG
 
 goto notConvert
@@ -584,7 +598,7 @@ if %filetypes% gtr 4 goto notConvert
 
 
 :: Check for a LIC.DAT file
-if not exist "%PS3_GAME%\LICDIR\LIC.DAT" set licenseStatus=0
+if not exist %licenseDatDisc% set licenseStatus=0
 
 :: Copy TROPHY and GAME files
 xcopy "%PS3_GAME%\TROPDIR" "%gameID%\TROPDIR" /s /i
@@ -661,7 +675,14 @@ echo When the KDW app opens, press C then 1 and ENTER to create a new LIC.DAT
 echo.
 echo.
 
+:: Navigate into kdw-licdat Directory to keep the right path while creating license
+cd "%binPath%\kdw-licdat"
+
 start "" %kdw_license_gen%
+
+:: Come back to root
+cd ..
+cd ..
 
 echo.
 echo.
@@ -673,11 +694,20 @@ echo.
 echo.
 pause>nul
 
-copy /y "%binPath%\kdw-licdat\GAMES\CREATE_NEW_LICENSE\PS3_GAME\LICDIR\LIC.DAT" "%PS3_GAME%\LICDIR\LIC.DAT"
+copy /y %licenseDatNew% %licenseDatDisc%
 
-set licenseStatus=1
+if exist %licenseDatNew% set licenseStatus=1
+if not exist %licenseDatNew% set licenseStatus=0
 
 )
+
+
+:: Wait a second
+set waitTime=2
+%wait%>nul
+
+:: Make sure LIC.DAT was created
+if %licenseStatus%==0 goto makeLIC
 
 
 if %licenseStatus%==1 (
@@ -690,8 +720,14 @@ echo Creating New License....
 echo.
 echo.
 
-make_npdata -e "%PS3_GAME%\LICDIR\LIC.DAT" "%gameID%\LICDIR\LIC.EDAT" 1 1 3 0 16 3 00 EP9000-%gameID%_00-0000000000000001 1
+::make_npdata -e %licenseDatDisc% %licenseDatNPD% 1 1 3 0 16 3 00 EP9000-%gameID%_00-0000000000000001 1
+%make_npdata% -e %licenseDatDisc% %licenseDatNPD% 1 1 3 0 16 3 00 EP9000-%gameID%_00-0000000000000001 1
 )
+
+
+:: --------------------------------------------------------
+:: ---- DO NOT CONTINUE IF THE LICENSE WAS NOT CREATED ----
+:: --------------------------------------------------------
 
 
 :dumpTXT
@@ -703,6 +739,10 @@ echo.>"%root%\%gameID%\USRDIR\EP9000-%gameID%_00-0000000000000001.txt"
 :: Cleaning Temp Files
 if exist %infile% del /q /f %infile%
 if exist "list.txt" del /f /q "list.txt"
+
+:: Remove Converted License File From Temp
+if exist %licenseDatNew% del /f /q %licenseDatNew%
+::if exist %licenseDatNewPath% rmdir /s /q %licenseDatNewPath%
 
 if exist "temp\PARAM_SFO_TITLE.txt" del /f /q "temp\PARAM_SFO_TITLE.txt"
 if exist "temp\TEMP_PARAM_SFO_TITLE.txt" del /f /q "temp\TEMP_PARAM_SFO_TITLE.txt"
