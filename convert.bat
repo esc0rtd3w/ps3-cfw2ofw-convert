@@ -756,7 +756,7 @@ if exist %infile% del /q /f %infile%
 if exist "list.txt" del /f /q "list.txt"
 
 :: Remove Converted License File From Temp
-::if exist %licenseDatNew% del /f /q %licenseDatNew%
+if exist %licenseDatNew% del /f /q %licenseDatNew%
 ::if exist %licenseDatNewPath% rmdir /s /q %licenseDatNewPath%
 
 if exist "temp\PARAM_SFO_TITLE.txt" del /f /q "temp\PARAM_SFO_TITLE.txt"
